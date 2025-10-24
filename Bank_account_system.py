@@ -18,7 +18,7 @@ def logdecorate(func):
     return wrapper
 
 
-class BankAccount():
+class BankAccount:
     bank_name="Mali Bank"
     def __init__(self,owner,balance):
         self._owner=owner
@@ -90,4 +90,5 @@ BankAccount.show_bank_name()
 Account="fati-2000"
 account=BankAccount.new_account(Account)
 print(account.owner)
+
 
