@@ -1,59 +1,93 @@
+from datetime import datetime
+
+def logdecorate(func):
+    def wrapper(*args, **kwargs):
+        time=datetime.now()
+        value=func(*args, **kwargs)
+        owner =args[0]._owner if args else "Unknown"
+        with open("log.txt","a")as file:
+            name=func.__name__
+            file.write(f"time-->{time}"+"\n")
+            file.write(f"name of the function -->{name}\n")
+            file.write(f"owner -->{owner}"+"\n")
+            file.write(f"Args-->{args[1:]}"+"\n")
+            file.write(f"kwargs-->{kwargs}"+"\n")
+            file.write(f"value-->{value}"+"\n")
+            file.write("-"*50+"\n")
+        return value
+    return wrapper
+
+
 class BankAccount():
+    bank_name="Mali Bank"
     def __init__(self,owner,balance):
-        self.owner=owner
-        self.balance=balance
+        self._owner=owner
+        self._balance=balance
+    #     to show the balance
+    @classmethod
+    def new_account(cls,account_string):
+        owner,balance=account_string.split("-")
+        return cls(owner,int(balance))
+
+    @property
+    def owner(self):
+        return self._owner
+
+    @property
+    def balance(self):
+        print(f"{self._owner}'s balance is {self._balance}")
+        return self._balance
+
+    @balance.setter
+    # here I use validation for set the balance
+    def balance(self,amount):
+
+        if amount<0:
+            print("balance cannot be negative")
+        elif amount==0:
+            print("balance cannot be zero")
+        else:
+            self._balance=amount
+    # @balance.deleter
+    # def balance(self):
+    #     del self._balance
+    #     --------------------
+    @logdecorate
+    def deposit(self,amount):
+        if amount<=0:
+            print("It is not possible to deposit a negative amount.")
+            return
+        else:
+            self._balance+=amount
+            print("Deposited amount:",self._balance)
+            return self._balance
+    #         ------------------------
+    @logdecorate
+    def withdraw(self,amount):
+        if amount>self._balance:
+            print("It is not possible because the amount is greater than the balance.")
+            return
+        else:
+            self._balance-=amount
+            print("Withdrawed amount:",self._balance)
+            return self._balance
+    @classmethod
+    def show_bank_name(cls):
+        print(f"This account belongs to {cls.bank_name}")
+
     def __str__(self):
-        return f"Owner: {self.owner}\nBalance: {self.balance}"
-    def deposit(self,count):
-        new_balance=count+self.balance
-        self.balance=new_balance
-        return new_balance
-    def withdraw(self,count):
-        if count<self.balance:
-            new_balance=self.balance-count
-            self.balance=new_balance
-        else:
-            print("there is not enough money!!")
-    def show_balance(self):
-        print(f"{self.owner} has {self.balance}$.")
+        return f"{self._owner}'s balance is {self._balance}"
 
 
-class Bank():
-    def __init__(self,bank_name):
-        self.name=bank_name
-        self.accounts=[]
-    def add_account(self,account):
-        self.accounts.append(account)
-        print(f"Account '{account.owner}' added.")
-    def remove_account(self,account):
-        if self.accounts.__contains__(account):
-            self.accounts.remove(account)
-        else:
-            print("account not exist")
-    def show_balance(self):
-        print(f"Accounts in bank '{self.name}':")
-        if not self.accounts:
-            print("No accounts in bank")
-        else:
-            for account in self.accounts:
-                print(f"Account '{account.owner} has {account.balance}$.")
 
-bank_1=Bank("MELI")
-p1=BankAccount("Zahra",1000)
-p2=BankAccount("Ali",2000)
-p3=BankAccount("Rozita",3000)
-bank_1.add_account(p1)
-bank_1.add_account(p2)
-bank_1.add_account(p3)
-bank_1.remove_account(p3)
-bank_1.show_balance()
-bank_1=Bank("AYANDE")
-print("*"*70)
-p1=BankAccount("Ziba",1000)
-p2=BankAccount("Ramin",2000)
-p3=BankAccount("Aram",3000)
-bank_1.add_account(p1)
-bank_1.add_account(p2)
-bank_1.add_account(p3)
-bank_1.remove_account(p3)
-bank_1.show_balance()
+account=BankAccount("Zahra Betvan",1000)
+account.deposit(500)
+account.withdraw(200)
+print(account.balance)
+account.balance=200
+print(account.balance)
+BankAccount.show_bank_name()
+Account="fati-2000"
+account=BankAccount.new_account(Account)
+print(account.owner)
+
