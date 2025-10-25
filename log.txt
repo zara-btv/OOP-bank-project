@@ -1,0 +1,14 @@
+time-->2025-10-25 09:57:46.338192
+name of the function -->deposit
+owner -->Zahra Betvan
+Args-->(500,)
+kwargs-->{}
+value-->1500
+--------------------------------------------------
+time-->2025-10-25 09:57:46.339881
+name of the function -->withdraw
+owner -->Zahra Betvan
+Args-->(200,)
+kwargs-->{}
+value-->1300
+--------------------------------------------------
