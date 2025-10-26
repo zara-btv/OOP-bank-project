@@ -1,5 +1,4 @@
 # custom Exception
-
 class NegativeAmountError(Exception):
     pass
 class InsufficientBalanceError(Exception):
