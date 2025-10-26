@@ -6,7 +6,7 @@ class InsufficientBalanceError(Exception):
     pass
 
 from datetime import datetime
-def LogDecorator(func):
+def logdecorator(func):
     def wrapper(*args, **kwargs):
         time = datetime.now()
         owner =args[0].owner if args else "Unknown"
@@ -77,7 +77,7 @@ class BankAccount:
         if value<0:
             raise NegativeAmountError("Balance cannot be negative")
         self._balance = value
-    @LogDecorator
+    @logdecorator
     def withdraw(self,amount):
         if amount<=0:
             raise NegativeAmountError("amount must be positive")
@@ -85,7 +85,7 @@ class BankAccount:
             raise InsufficientBalanceError("amount must be greater than balance")
         self._balance -= amount
         return f"withdraw amount:{amount} and new balance:{self._balance}"
-    @LogDecorator
+    @logdecorator
     def deposit(self,amount):
         if amount<=0:
             raise NegativeAmountError("amount must be positive")

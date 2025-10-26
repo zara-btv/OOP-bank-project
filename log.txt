@@ -30,4 +30,20 @@ function name-->withdraw
 Status:Exception(NegativeAmountError)
 Exception -->amount must be positive
 rollback balance:2000
+----------------------------------------------------------------------------------------------------time -->2025-10-26 17:38:14.813955
+function name-->withdraw
+Status:SUCCESS
+new balance -->withdraw amount:100 and new balance:0
+----------------------------------------------------------------------------------------------------
+time -->2025-10-26 17:38:14.813955
+function name-->deposit
+Status:SUCCESS
+new balance -->Deposit: 10.00 $ | New Balance: 10.00 $
+----------------------------------------------------------------------------------------------------
+time -->2025-10-26 17:38:14.815949
+owner-->ali 
+function name-->withdraw
+Status:Exception(NegativeAmountError)
+Exception -->amount must be positive
+rollback balance:2000
 ----------------------------------------------------------------------------------------------------
