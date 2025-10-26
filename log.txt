@@ -1,14 +1,22 @@
-time-->2025-10-25 09:57:46.338192
-name of the function -->deposit
-owner -->Zahra Betvan
-Args-->(500,)
-kwargs-->{}
-value-->1500
---------------------------------------------------
-time-->2025-10-25 09:57:46.339881
-name of the function -->withdraw
-owner -->Zahra Betvan
-Args-->(200,)
-kwargs-->{}
-value-->1300
---------------------------------------------------
+time -->2025-10-26 11:46:21.510749
+function name-->withdraw
+Status:SUCCESS
+new balance -->withdraw amount:100 and new balance:0
+----------------------------------------------------------------------------------------------------time -->2025-10-26 11:46:21.511887
+function name-->deposit
+Status:SUCCESS
+new balance -->deposit amount:10 and new balance:10
+----------------------------------------------------------------------------------------------------time -->2025-10-26 11:47:24.760450
+function name-->withdraw
+Status:SUCCESS
+new balance -->withdraw amount:100 and new balance:0
+----------------------------------------------------------------------------------------------------time -->2025-10-26 11:47:24.761447
+function name-->deposit
+Status:SUCCESS
+new balance -->deposit amount:10 and new balance:10
+----------------------------------------------------------------------------------------------------time -->2025-10-26 11:47:24.763501
+owner-->ali 
+function name-->withdraw
+Status:Exception(NegativeAmountError)
+Exception -->amount must be positive
+----------------------------------------------------------------------------------------------------

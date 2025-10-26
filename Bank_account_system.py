@@ -1,93 +1,132 @@
-from datetime import datetime
+# custom Exception
 
-def logdecorate(func):
+class NegativeAmountError(Exception):
+    pass
+class InsufficientBalanceError(Exception):
+    pass
+
+from datetime import datetime
+def LogDecorator(func):
     def wrapper(*args, **kwargs):
-        time=datetime.now()
-        value=func(*args, **kwargs)
-        owner =args[0]._owner if args else "Unknown"
-        with open("log.txt","a")as file:
-            name=func.__name__
-            file.write(f"time-->{time}"+"\n")
-            file.write(f"name of the function -->{name}\n")
-            file.write(f"owner -->{owner}"+"\n")
-            file.write(f"Args-->{args[1:]}"+"\n")
-            file.write(f"kwargs-->{kwargs}"+"\n")
-            file.write(f"value-->{value}"+"\n")
-            file.write("-"*50+"\n")
-        return value
+        time = datetime.now()
+        owner =args[0].owner if args else "Unknown"
+        try:
+            result = func(*args, **kwargs)
+            log_status="SUCCESS"
+        except Exception as e:
+            result=str(e)
+            # type of Error
+            log_status=f"Exception({type(e).__name__})"
+            backup=getattr(args[0],"_backup_balance",None)
+            with open("log.txt","a",encoding="utf-8") as file:
+                file.write(f"time -->{time}\n")
+                file.write(f"owner-->{owner}\n")
+                file.write(f"function name-->{func.__name__}\n")
+                file.write(f"Status:{log_status}\n")
+                file.write(f"Exception -->{e}\n")
+                if backup is not None:
+                    file.write(f"rollback balance:{backup}\n")
+                file.write("-"*100)
+            raise
+        else:
+            with open("log.txt","a") as file:
+                file.write(f"time -->{time}\n")
+                file.write(f"function name-->{func.__name__}\n")
+                file.write(f"Status:{log_status}\n")
+                file.write(f"new balance -->{result}\n")
+                file.write("-"*100)
+            return result
+
+
     return wrapper
 
 
-class BankAccount():
-    bank_name="Mali Bank"
-    def __init__(self,owner,balance):
-        self._owner=owner
-        self._balance=balance
-    #     to show the balance
+
+class BankAccount:
+
+    def __init__(self,owner ,balance):
+        self._owner = owner
+        self._balance = balance
+        self._backup_Balance = balance
+    def __enter__(self):
+        print(f"Starting transaction for {self.owner}")
+        self._balance_backup = self._balance
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type:
+            print(f"Error occured: {exc_type}. Rolling back ...")
+            self._balance = self._backup_Balance
+            return False
+        else:
+            print(f"Transaction completed successfully")
+            return False
+
     @classmethod
-    def new_account(cls,account_string):
-        owner,balance=account_string.split("-")
+    def new_account(cls,new):
+        owner,balance=new.strip().split("-")
         return cls(owner,int(balance))
 
     @property
     def owner(self):
         return self._owner
-
     @property
     def balance(self):
-        print(f"{self._owner}'s balance is {self._balance}")
         return self._balance
-
     @balance.setter
-    # here I use validation for set the balance
-    def balance(self,amount):
-
-        if amount<0:
-            print("balance cannot be negative")
-        elif amount==0:
-            print("balance cannot be zero")
-        else:
-            self._balance=amount
-    # @balance.deleter
-    # def balance(self):
-    #     del self._balance
-    #     --------------------
-    @logdecorate
+    def balance(self,value):
+        if value<0:
+            raise NegativeAmountError("Balance cannot be negative")
+        self._balance = value
+    @LogDecorator
+    def withdraw(self,amount):
+        if amount<=0:
+            raise NegativeAmountError("amount must be positive")
+        if amount>self._balance:
+            raise InsufficientBalanceError("amount must be greater than balance")
+        self._balance -= amount
+        return f"withdraw amount:{amount} and new balance:{self._balance}"
+    @LogDecorator
     def deposit(self,amount):
         if amount<=0:
-            print("It is not possible to deposit a negative amount.")
-            return
-        else:
-            self._balance+=amount
-            print("Deposited amount:",self._balance)
-            return self._balance
-    #         ------------------------
-    @logdecorate
-    def withdraw(self,amount):
-        if amount>self._balance:
-            print("It is not possible because the amount is greater than the balance.")
-            return
-        else:
-            self._balance-=amount
-            print("Withdrawed amount:",self._balance)
-            return self._balance
-    @classmethod
-    def show_bank_name(cls):
-        print(f"This account belongs to {cls.bank_name}")
-
+            raise NegativeAmountError("amount must be positive")
+        self._balance += amount
+        return f"deposit amount:{amount} and new balance:{self._balance}"
     def __str__(self):
-        return f"{self._owner}'s balance is {self._balance}"
+        return f"owner:{self.owner}, balance:{self.balance}"
+
+    @staticmethod
+    def show_history():
+        with open("log.txt","r",encoding="utf-8") as file:
+            print(file.read())
+
+    @staticmethod
+    def format_currency(amount):
+        return f"{amount}$"
 
 
 
-account=BankAccount("Zahra Betvan",1000)
-account.deposit(500)
-account.withdraw(200)
-print(account.balance)
-account.balance=200
-print(account.balance)
-BankAccount.show_bank_name()
-Account="fati-2000"
-account=BankAccount.new_account(Account)
-print(account.owner)
+
+
+
+
+account_1=BankAccount("zahra",100)
+account_2=BankAccount.new_account("ali - 2000 ")
+try:
+    with account_1 as a:
+        a.withdraw(100)
+        a.deposit(10)
+except Exception as e:
+    print(f"Transaction failed :{e}")
+
+try:
+    with account_2 as b:
+        b.withdraw(-100)
+        b.deposit(3000)
+except Exception as e:
+    print(f"Transaction failed :{e}")
+
+print(f"Final balance for {account_1.owner}:{account_1.balance}")
+account_1.show_history()
+
 
