@@ -34,7 +34,7 @@ def LogDecorator(func):
                 file.write(f"function name-->{func.__name__}\n")
                 file.write(f"Status:{log_status}\n")
                 file.write(f"new balance -->{result}\n")
-                file.write("-"*100)
+                file.write("-"*100+"\n")
             return result
 
 
@@ -47,7 +47,7 @@ class BankAccount:
     def __init__(self,owner ,balance):
         self._owner = owner
         self._balance = balance
-        self._backup_Balance = balance
+        self._backup_balance = balance
     def __enter__(self):
         print(f"Starting transaction for {self.owner}")
         self._balance_backup = self._balance
@@ -55,11 +55,10 @@ class BankAccount:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type:
-            print(f"Error occured: {exc_type}. Rolling back ...")
-            self._balance = self._backup_Balance
-            return False
+                print(f"⚠️ Error occurred: {exc_val}. Rolling back ...")
+                self._balance = self._backup_balance
         else:
-            print(f"Transaction completed successfully")
+            print("✅ Transaction completed successfully.")
             return False
 
     @classmethod
@@ -91,18 +90,19 @@ class BankAccount:
         if amount<=0:
             raise NegativeAmountError("amount must be positive")
         self._balance += amount
-        return f"deposit amount:{amount} and new balance:{self._balance}"
+        return f"Deposit: {self.format_currency(amount)} | New Balance: {self.format_currency(self._balance)}"
     def __str__(self):
         return f"owner:{self.owner}, balance:{self.balance}"
 
     @staticmethod
     def show_history():
-        with open("log.txt","r",encoding="utf-8") as file:
+        print("\n📜 Transaction History:\n" + "-" * 60)
+        with open("log.txt", "r", encoding="utf-8") as file:
             print(file.read())
 
     @staticmethod
     def format_currency(amount):
-        return f"{amount}$"
+        return f"{amount:,.2f} $"
 
 
 
@@ -128,5 +128,6 @@ except Exception as e:
 
 print(f"Final balance for {account_1.owner}:{account_1.balance}")
 account_1.show_history()
+print(BankAccount.format_currency(1000))
 
 
