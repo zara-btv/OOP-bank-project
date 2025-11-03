@@ -1,0 +1,13 @@
+# Ignore runtime data
+data/*.json
+data/*.csv
+data/*.pkl
+
+# Ignore compiled files
+__pycache__/
+*.pyc
+
+# Ignore IDE and virtual environment stuff
+.idea/
+.vscode/
+venv/
